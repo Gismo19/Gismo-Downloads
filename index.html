@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Gismo02Build Downloads</title>
+<style>
+  html, body {
+    background-color: #111111;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  /* Das kompakte Modrinth-Downloadmenü */
+  .modrinth-popup {
+    background-color: #1c1c1c;
+    border: 1px solid #2d2d2d;
+    border-radius: 14px;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    box-sizing: border-box;
+    text-align: left;
+  }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #2d2d2d;
+    padding-bottom: 15px;
+  }
+  .title-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .icon-box {
+    background-color: #252525;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .select-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    margin-top: 15px;
+  }
+  select {
+    flex: 1;
+    background-color: #252525;
+    color: white;
+    border: 1px solid #3d3d3d;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  /* Die originale Download-Box unten (Zuerst unsichtbar) */
+  .main-release-box {
+    display: none; 
+    background-color: #141414;
+    border-radius: 10px;
+    padding: 16px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .version-info-row {
+    display: flex;
+    align-items: center;
+  }
+  .version-num {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  .release-badge {
+    background-color: #00381c;
+    color: #00af5c;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+  }
+  .size-info {
+    color: #888;
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  
+  /* Der grüne Button rechts in der Box */
+  .download-btn {
+    background-color: #00af5c;
+    color: #111111;
+    padding: 12px 24px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    transition: background 0.2s;
+  }
+  .download-btn:hover {
+    background-color: #00cd6c;
+  }
+</style>
+</head>
+<body>
+
+  <div class="modrinth-popup">
+    
+    <!-- Kopfzeile -->
+    <div class="header-row">
+      <div class="title-area">
+        <div class="icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span>DOWNLOAD SKBEE</span>
+      </div>
+    </div>
+
+    <!-- Dropdowns -->
+    <div class="select-row">
+      <select id="versionSelect" onchange="updateDownload()">
+        <option value="" selected>Version wählen</option>
+        <option value="26.3">26.3</option>
+        <option value="26.2">26.2</option>
+        <option value="26.1.2">26.1.2</option>
+        <option value="26.1.1">26.1.1</option>
+        <option value="26.1">26.1</option>
+      </select>
+      
+      <select id="loaderSelect" disabled>
+        <option value="paper">Paper</option>
+      </select>
+    </div>
+
+    <!-- Grüne Download-Box ganz unten -->
+    <div id="dlBox" class="main-release-box">
+      <div>
+        <div class="version-info-row">
+          <span id="displayVersion" class="version-num">-</span>
+          <span class="release-badge">Release</span>
+        </div>
+        <div id="displaySize" class="size-info">0.00 MiB</div>
+      </div>
+      
+      <!-- Dieser Button öffnet das neue Fenster, startet den Download und schließt es sofort wieder -->
+      <button id="dlButton" class="download-btn" onclick="startPopupDownload()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download
+      </button>
+    </div>
+
+  </div>
+
+<script>
+// Daten-Zentrale: GitHub erlaubt es, die Datei direkt über den Namen anzusteuern!
+const versionData = {
+  "26.3": { showName: "3.26.3", size: "2.48 MiB", link: "SkBee-3.26.0.jar" },
+  "26.2": { showName: "3.26.0", size: "2.48 MiB", link: "SkBee-3.26.0.jar" }, // Verweist direkt auf deine hochgeladene Datei
+  "26.1.2": { showName: "3.26.1.2", size: "2.40 MiB", link: "SkBee-3.26.0.jar" },
+  "26.1.1": { showName: "3.26.1.1", size: "2.39 MiB", link: "SkBee-3.26.0.jar" },
+  "26.1": { showName: "3.26.1", size: "2.35 MiB", link: "SkBee-3.26.0.jar" }
+};
+
+let currentDownloadUrl = "";
+
+function updateDownload() {
+  const select = document.getElementById("versionSelect");
+  const dlBox = document.getElementById("dlBox");
+  const displayVersion = document.getElementById("displayVersion");
+  const displaySize = document.getElementById("displaySize");
+  
+  const selectedValue = select.value;
+  if (selectedValue && versionData[selectedValue]) {
+    const data = versionData[selectedValue];
+    displayVersion.innerText = data.showName;
+    displaySize.innerText = data.size;
+    currentDownloadUrl = data.link; // Merkt sich den Dateinamen
+    dlBox.style.display = "flex";
+  } else {
+    dlBox.style.display = "none";
+    currentDownloadUrl = "";
+  }
+}
+
+function openWindowWithDownload(url) {
+    // Erstellt ein neues, temporäres Fenster
+    const win = window.open("", "_blank");
+    if (win) {
+        // Schreibt den automatischen Download-Befehl direkt in das neue Fenster
+        win.document.write(`
+            <html>
+            <body>
+            <script>
+                const a = document.createElement('a');
+                a.href = '${url}';
+                a.download = '';
+                document.body.appendChild(a);
+                a.click();
+                // Schließt das Fenster sofort nach dem Klick wieder von alleine!
+                setTimeout(() => window.close(), 100);
+            <\/script>
+            </body>
+            </html>
+        `);
+        win.document.close();
+    }
+}
+
+function startPopupDownload() {
+  if (currentDownloadUrl !== "") {
+    openWindowWithDownload(currentDownloadUrl);
+  }
+}
+
+updateDownload();
+</script>
+
+</body>
+</html>
