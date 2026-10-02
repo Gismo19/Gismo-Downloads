@@ -25,7 +25,6 @@
     max-width: 500px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.6);
     box-sizing: border-box;
-    text-align: left;
   }
 
   .header-row {
@@ -59,6 +58,11 @@
     font-size: 15px;
     border-radius: 8px;
     cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://w3.org' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
   }
 
   .main-release-box {
@@ -93,6 +97,7 @@
     gap: 8px;
     font-size: 15px;
     cursor: pointer;
+    border: none;
   }
   .download-btn:hover { background-color: #00cd6c; }
 </style>
@@ -120,21 +125,32 @@
         <div><span class="version-num">3.26.0</span><span class="release-badge">Release</span></div>
         <div class="size-info">2.48 MiB</div>
       </div>
-      <!-- Verweist direkt auf deine hochgeladene Datei auf unblockiertem Server -->
-      <a id="dlButton" class="download-btn" href="https://google.com" download>Download</a>
+      <!-- Zwingt den Browser auf derselben Seite den Drive-Download zu starten -->
+      <button id="dlButton" class="download-btn" onclick="startDirectDownload()">Download</button>
     </div>
   </div>
 
 <script>
+// Hier ist dein funktionierender Google-Drive-Link hinterlegt
+const downloadUrl = "https://google.com";
+
 function updateDownload() {
   const select = document.getElementById("versionSelect");
   const dlBox = document.getElementById("dlBox");
-  // Sobald eine Version gewählt wird, taucht die Box unten auf
   if (select.value !== "") {
     dlBox.style.display = "flex";
   } else {
     dlBox.style.display = "none";
   }
+}
+
+function startDirectDownload() {
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  a.target = '_self'; // Bleibt im selben Tab, öffnet keine neue Seite!
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 </script>
 </body>
